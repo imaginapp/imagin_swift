@@ -8,10 +8,10 @@
 
 /* Begin PBXBuildFile section */
 		A13273C52DC5F344001D76C4 /* ImaginProto in Frameworks */ = {isa = PBXBuildFile; productRef = A13273C42DC5F344001D76C4 /* ImaginProto */; };
-		A13273C82DC5F474001D76C4 /* ImaginProto in Frameworks */ = {isa = PBXBuildFile; productRef = A13273C72DC5F474001D76C4 /* ImaginProto */; };
 		A1901CB22DB4B64000FA862B /* ImaginProto in Frameworks */ = {isa = PBXBuildFile; productRef = A1901CB12DB4B64000FA862B /* ImaginProto */; };
 		A1901CB42DB4C82800FA862B /* ImaginProto in Frameworks */ = {isa = PBXBuildFile; productRef = A1901CB32DB4C82800FA862B /* ImaginProto */; };
 		A1901CB62DB4C8C600FA862B /* ImaginProto in Frameworks */ = {isa = PBXBuildFile; productRef = A1901CB52DB4C8C600FA862B /* ImaginProto */; };
+		A1E7EF4A2DD8565900B732BC /* ImaginProto in Frameworks */ = {isa = PBXBuildFile; productRef = A1E7EF492DD8565900B732BC /* ImaginProto */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -76,7 +76,7 @@
 				A13273C52DC5F344001D76C4 /* ImaginProto in Frameworks */,
 				A1901CB42DB4C82800FA862B /* ImaginProto in Frameworks */,
 				A1901CB62DB4C8C600FA862B /* ImaginProto in Frameworks */,
-				A13273C82DC5F474001D76C4 /* ImaginProto in Frameworks */,
+				A1E7EF4A2DD8565900B732BC /* ImaginProto in Frameworks */,
 				A1901CB22DB4B64000FA862B /* ImaginProto in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -150,7 +150,7 @@
 				A1901CB32DB4C82800FA862B /* ImaginProto */,
 				A1901CB52DB4C8C600FA862B /* ImaginProto */,
 				A13273C42DC5F344001D76C4 /* ImaginProto */,
-				A13273C72DC5F474001D76C4 /* ImaginProto */,
+				A1E7EF492DD8565900B732BC /* ImaginProto */,
 			);
 			productName = imagin;
 			productReference = A17716CE2DB4856E0027BF02 /* imagin.app */;
@@ -235,7 +235,7 @@
 			mainGroup = A17716C52DB4856E0027BF02;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				A13273C62DC5F474001D76C4 /* XCRemoteSwiftPackageReference "proto" */,
+				A1E7EF482DD8565900B732BC /* XCRemoteSwiftPackageReference "proto" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A17716CF2DB4856E0027BF02 /* Products */;
@@ -606,12 +606,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		A13273C62DC5F474001D76C4 /* XCRemoteSwiftPackageReference "proto" */ = {
+		A1E7EF482DD8565900B732BC /* XCRemoteSwiftPackageReference "proto" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "git@github.com:imaginapp/proto.git";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -619,11 +619,6 @@
 /* Begin XCSwiftPackageProductDependency section */
 		A13273C42DC5F344001D76C4 /* ImaginProto */ = {
 			isa = XCSwiftPackageProductDependency;
-			productName = ImaginProto;
-		};
-		A13273C72DC5F474001D76C4 /* ImaginProto */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = A13273C62DC5F474001D76C4 /* XCRemoteSwiftPackageReference "proto" */;
 			productName = ImaginProto;
 		};
 		A1901CB12DB4B64000FA862B /* ImaginProto */ = {
@@ -636,6 +631,11 @@
 		};
 		A1901CB52DB4C8C600FA862B /* ImaginProto */ = {
 			isa = XCSwiftPackageProductDependency;
+			productName = ImaginProto;
+		};
+		A1E7EF492DD8565900B732BC /* ImaginProto */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1E7EF482DD8565900B732BC /* XCRemoteSwiftPackageReference "proto" */;
 			productName = ImaginProto;
 		};
 /* End XCSwiftPackageProductDependency section */
