@@ -11,6 +11,7 @@
 		A1901CB22DB4B64000FA862B /* ImaginProto in Frameworks */ = {isa = PBXBuildFile; productRef = A1901CB12DB4B64000FA862B /* ImaginProto */; };
 		A1901CB42DB4C82800FA862B /* ImaginProto in Frameworks */ = {isa = PBXBuildFile; productRef = A1901CB32DB4C82800FA862B /* ImaginProto */; };
 		A1901CB62DB4C8C600FA862B /* ImaginProto in Frameworks */ = {isa = PBXBuildFile; productRef = A1901CB52DB4C8C600FA862B /* ImaginProto */; };
+		A1DD9CDC2DE1720D000157A3 /* stellarsdk in Frameworks */ = {isa = PBXBuildFile; productRef = A1DD9CDB2DE1720D000157A3 /* stellarsdk */; };
 		A1E7EF4A2DD8565900B732BC /* ImaginProto in Frameworks */ = {isa = PBXBuildFile; productRef = A1E7EF492DD8565900B732BC /* ImaginProto */; };
 /* End PBXBuildFile section */
 
@@ -78,6 +79,7 @@
 				A1901CB62DB4C8C600FA862B /* ImaginProto in Frameworks */,
 				A1E7EF4A2DD8565900B732BC /* ImaginProto in Frameworks */,
 				A1901CB22DB4B64000FA862B /* ImaginProto in Frameworks */,
+				A1DD9CDC2DE1720D000157A3 /* stellarsdk in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -151,6 +153,7 @@
 				A1901CB52DB4C8C600FA862B /* ImaginProto */,
 				A13273C42DC5F344001D76C4 /* ImaginProto */,
 				A1E7EF492DD8565900B732BC /* ImaginProto */,
+				A1DD9CDB2DE1720D000157A3 /* stellarsdk */,
 			);
 			productName = imagin;
 			productReference = A17716CE2DB4856E0027BF02 /* imagin.app */;
@@ -236,6 +239,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				A1E7EF482DD8565900B732BC /* XCRemoteSwiftPackageReference "proto" */,
+				A1DD9CDA2DE1720D000157A3 /* XCRemoteSwiftPackageReference "stellar-ios-mac-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = A17716CF2DB4856E0027BF02 /* Products */;
@@ -606,6 +610,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A1DD9CDA2DE1720D000157A3 /* XCRemoteSwiftPackageReference "stellar-ios-mac-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:Soneso/stellar-ios-mac-sdk.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.0;
+			};
+		};
 		A1E7EF482DD8565900B732BC /* XCRemoteSwiftPackageReference "proto" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "git@github.com:imaginapp/proto.git";
@@ -632,6 +644,11 @@
 		A1901CB52DB4C8C600FA862B /* ImaginProto */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = ImaginProto;
+		};
+		A1DD9CDB2DE1720D000157A3 /* stellarsdk */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1DD9CDA2DE1720D000157A3 /* XCRemoteSwiftPackageReference "stellar-ios-mac-sdk" */;
+			productName = stellarsdk;
 		};
 		A1E7EF492DD8565900B732BC /* ImaginProto */ = {
 			isa = XCSwiftPackageProductDependency;
