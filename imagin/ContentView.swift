@@ -24,7 +24,7 @@ struct ContentView: View {
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .padding()
-
+                Spacer()
                 versionView()
                 accountView()
             }
@@ -40,17 +40,20 @@ struct ContentView: View {
                 fetchVersion()
             }) {
                 HStack {
+                    Spacer()
                     Image(systemName: "star.fill")
                         .font(.system(size: 20))
                         .foregroundColor(.imaginBlack)
                     Text("Get Version")
                         .font(.system(size: 20).bold())
                         .foregroundColor(.imaginBlack)
+                    Spacer()
                 }
                 .padding()
                 .foregroundColor(.black)
                 .background(.white)
                 .cornerRadius(8)
+            
             }
             if let versionInfo {
                 Text("Version: \(versionInfo)")

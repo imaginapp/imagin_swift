@@ -16,7 +16,7 @@ struct ImaginApp: App {
 
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SignupInviteCodeView()
                 .environmentObject(appState)
         }
     }

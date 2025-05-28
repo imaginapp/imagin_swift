@@ -44,8 +44,39 @@ extension Color {
         )
     }
 
-    static let imaginBlack: Color = .init(hex: 0xff2d_3436)
-    static let imaginWhite: Color = .init(hex: 0xfff4_f8f9)
-    static let imaginYellow: Color = .init(hex: 0xffff_eb3b)
-    static let imaginHeartRed: Color = .init(hex: 0xffff_5252)
+    static let imaginBlack: Color = .init(hex: 0xff2d3436)
+    static let imaginWhite: Color = .init(hex: 0xfff4f8f9)
+    static let imaginYellow: Color = .init(hex: 0xffffeb3b)
+    static let imaginHeartRed: Color = .init(hex: 0xffff5252)
+    
+//    https://angrytools.com/gradient/
+    static let gradColorYellow = Color(red: 255/255, green: 255/255, blue: 0/255);
+    static let gradColorBlue = Color(red: 0/255, green: 188/255, blue: 212/255);
+    static let gradColorRed = Color(red: 238/255, green: 130/255, blue: 131/255);
+    
+    static let gradColorYellowDark = Color(red: 105/255, green: 105/255, blue: 19/255);
+    static let gradColorBlueDark = Color(red: 13/255, green: 79/255, blue: 87/255);
+    static let gradColorRedDark = Color(red: 102/255, green: 63/255, blue: 63/255);
+}
+
+extension Gradient {
+    static let imaginGradient = Gradient(colors: [Color.imaginYellow, Color.imaginBlack]);
+
+    static let threeColorGradient = Gradient(colors: [ Color.gradColorYellow, Color.gradColorBlue, Color.gradColorRed]);
+    static let threeColorGradientDark = Gradient(colors: [ Color.gradColorYellowDark, Color.gradColorBlueDark, Color.gradColorRedDark]);
+    static let threeColorAngled =  LinearGradient(
+        gradient: threeColorGradient,
+        startPoint: .init(x: 0.85, y: 0.15),
+             endPoint: .init(x: 0.15, y: 0.85)
+      )
+    static let threeColorAngledDark =  LinearGradient(
+        gradient: threeColorGradientDark,
+        startPoint: .init(x: 0.85, y: 0.15),
+             endPoint: .init(x: 0.15, y: 0.85)
+      )
+    static let imaginColorAngled =  LinearGradient(
+        gradient: imaginGradient,
+        startPoint: .init(x: 0.85, y: 0.15),
+             endPoint: .init(x: 0.15, y: 0.85)
+      )
 }
