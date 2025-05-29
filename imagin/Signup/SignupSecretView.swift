@@ -81,41 +81,36 @@ struct SignupSecretView: View {
             }.onAppear {
                 generateMnemonic()
             }
-            //            .navigationBarItems(
-            //                leading:
-            //                    Button(action: {
-            //                        print("pressed!!")
-            //                    }) {
-            //                        HStack {
-            //                            Image(systemName: "xmark")
-            //                                .font(.system(size: 16).bold())
-            //                                .foregroundColor(.imaginBlack)
-            //                        }
-            //                        .padding(10)
-            //                        .background(.thinMaterial)
-            //                        .cornerRadius(45)
-            //                    },
-            //                //                    Image("LogoBlack")
-            //                //                    .resizable()
-            //                //                    .aspectRatio(contentMode: .fit)
-            //                //                    .frame(height: 45.0)
-            //                //                    .padding(),
-            //                trailing:
-            //                    Button(action: {
-            //                        print("pressed!!")
-            //                    }) {
-            //                        HStack {
-            //                            Text("Create Account")
-            //                                .font(.system(size: 16).bold())
-            //                                .foregroundColor(.imaginBlack)
-            //                                .padding(.vertical, 10)
-            //                                .padding(.horizontal, 16)
-            //
-            //                        }
-            //                        .background(.thinMaterial)
-            //                        .cornerRadius(45)
-            //                    }
-            //            )
+            .navigationBarItems(
+                leading:
+                    Button(action: {
+                        print("pressed!!")
+                    }) {
+                        HStack {
+                            Image(systemName: "chevron.backward")
+                                .font(.system(size: 16).bold())
+                                .foregroundColor(.imaginBlack)
+                        }
+                        .padding(10)
+                        .background(.thinMaterial)
+                        .cornerRadius(45)
+                    },
+                trailing:
+                    Button(action: {
+                        print("pressed!!")
+                    }) {
+                        HStack {
+                            Text("Next")
+                                .font(.system(size: 16).bold())
+                                .foregroundColor(.imaginBlack)
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 16)
+
+                        }
+                        .background(.thinMaterial)
+                        .cornerRadius(45)
+                    }
+            )
         }
     }
 

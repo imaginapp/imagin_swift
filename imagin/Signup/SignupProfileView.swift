@@ -17,29 +17,28 @@ struct SignupProfileView: View {
     var body: some View {
         NavigationView {
             BackgroundView(linearGradient: Gradient.threeColorAngled) {
-                VStack {
-                    ThinCard {
-                        VStack {
-                            Image(systemName: "person.crop.circle.badge.plus")
-                                .font(.system(size: 24)).padding(.bottom, 5)
-                            Text("Add an avatar")
-                                .font(.system(size: 24).bold())
-                                .padding(4)
+                ScrollView {
+                    VStack {
 
+                        VStack {
                             if let avatarImage = avatarImage {
                                 avatarImage
                                     .resizable()
                                     .scaledToFill()
-                                    .frame(width: 120, height: 120)
+                                    .frame(width: 240, height: 240)
                                     .clipShape(
-                                        RoundedRectangle(cornerRadius: 12)
+                                        RoundedRectangle(
+                                            cornerRadius: 40,
+                                            style: .continuous
+                                        )
                                     )
                             } else {
-                                //                                Image(systemName: "person.crop.square.fill")
-                                //                                    .resizable()
-                                //                                    .scaledToFit()
-                                //                                    .frame(width: 120, height: 120)
-                                //                                    .foregroundColor(.imaginWhite)
+                                Image(systemName: "person.crop.square.fill")
+                                    .resizable()
+                                    .scaledToFit()
+                                    .frame(width: 240, height: 240)
+                                    .foregroundColor(.imaginWhite)
+                                    .opacity(0.2)
                             }
 
                             Button(action: {
@@ -49,60 +48,91 @@ struct SignupProfileView: View {
                                     Image(
                                         systemName:
                                             "person.crop.circle.badge.plus"
-                                    ).font(
-                                        .system(size: 16)
                                     )
                                     .foregroundColor(.imaginBlack)
-                                    Text("Add Avatar")
-                                        .font(.system(size: 16).bold())
-                                        .foregroundColor(.imaginBlack)
+                                    Text(
+                                        selectedUIImage == nil
+                                            ? "Add Avatar" : "Edit Avatar"
+                                    )
+                                    .foregroundColor(.imaginBlack)
                                 }
                                 .padding(.vertical, 8)
                                 .padding(.horizontal, 16)
                                 .background(.thinMaterial)
-                                .cornerRadius(45)
+                                .clipShape(Capsule())
                             }
-                        }.padding()
+                        }
+                        .padding(.top, 32)
+                        .padding(.bottom, 32)
 
-                    }.fixedSize(horizontal: false, vertical: true)
-
-                    ThinCard {
-                        VStack {
-                            Image(systemName: "person.crop.circle.badge.plus")
-                                .font(.system(size: 24)).padding(.bottom, 5)
-                            Text("Profile")
-                                .font(.system(size: 24).bold())
-                                .padding(4)
-                            Text("Enter your name and a bit about yourself")
+                        ThinCard {
+                            VStack {
+                                Image(systemName: "person.circle")
+                                    .font(.title)
+                                    .padding(.bottom, 5)
+                                Text("Profile")
+                                    .font(.title)
+                                    .padding(4)
+                                Text("Enter your name and a bit about yourself")
+                                    .multilineTextAlignment(.center)
+                                    .font(.system(size: 16))
+                                Divider()
+                                TextField(
+                                    "Enter your name",
+                                    text: $profileName
+                                )
+                                .font(.title)
+                                .onSubmit {
+                                    //                                    validate(name: username)
+                                }
                                 .multilineTextAlignment(.center)
-                                .font(.system(size: 16))
-                            Divider()
-                            TextField(
-                                "Enter your name",
-                                text: $profileName
-                            )
-                            .font(.system(size: 24).bold())
-                            .onSubmit {
-                                //                                    validate(name: username)
-                            }
-                            .multilineTextAlignment(.center)
-                            .textInputAutocapitalization(.never)
-                            .disableAutocorrection(true)
-                            .padding(.horizontal, 8)
+                                .textInputAutocapitalization(.never)
+                                .disableAutocorrection(true)
+                                .padding(.horizontal, 8)
 
-                            Divider()
+                                Divider()
 
-                            MultilineTextField(
-                                placeholder: "Something about yourself",
-                                text: $profileAboutMe
-                            )
-                            .frame(minHeight: 100)
-                        }.padding()
+                                MultilineTextField(
+                                    placeholder: "Something about yourself",
+                                    text: $profileAboutMe
+                                )
+                                .frame(minHeight: 100)
+                            }.padding()
 
-                    }.fixedSize(horizontal: false, vertical: true)
+                        }.fixedSize(horizontal: false, vertical: true)
 
-                }.padding()
-            }
+                    }.padding()
+                }
+            }.navigationBarItems(
+                leading:
+                    Button(action: {
+                        print("pressed!!")
+                    }) {
+                        HStack {
+                            Image(systemName: "chevron.backward")
+                                .font(.system(size: 16).bold())
+                                .foregroundColor(.imaginBlack)
+                        }
+                        .padding(10)
+                        .background(.thinMaterial)
+                        .cornerRadius(45)
+                    },
+                trailing:
+                    Button(action: {
+                        print("pressed!!")
+                    }) {
+                        HStack {
+                            Text("Next")
+                                .font(.system(size: 16).bold())
+                                .foregroundColor(.imaginBlack)
+                                .padding(.vertical, 10)
+                                .padding(.horizontal, 16)
+
+                        }
+                        .background(.thinMaterial)
+                        .cornerRadius(45)
+                    }
+            )
         }
         .sheet(isPresented: $showImagePicker) {
             ImagePicker(image: $selectedUIImage, isShown: $showImagePicker)
@@ -112,6 +142,7 @@ struct SignupProfileView: View {
                 avatarImage = Image(uiImage: newImage)
             }
         }
+
     }
 }
 
