@@ -8,18 +8,25 @@
 import SwiftUI
 
 struct SignupProfileView: View {
+    @EnvironmentObject var signupState: SignupState
+
     @State private var avatarImage: Image?
-    @State private var showImagePicker = false
     @State private var selectedUIImage: UIImage?
     @State private var profileName: String = ""
     @State private var profileAboutMe: String = ""
 
-    var body: some View {
-        NavigationView {
-            BackgroundView(linearGradient: Gradient.threeColorAngled) {
-                ScrollView {
-                    VStack {
+    @State private var profileNameError: String = ""
+    @State private var profileAboutMeError: String = ""
 
+    @FocusState private var isNameFieldFocused: Bool
+    @FocusState private var isAboutMeFieldFocused: Bool
+
+    @State private var keyboardHeight: CGFloat = 0
+
+    var body: some View {
+            BackgroundView(linearGradient: Gradient.threeColorAngled) {
+                ScrollViewReader { proxy in
+                    ScrollView {
                         VStack {
                             if let avatarImage = avatarImage {
                                 avatarImage
@@ -41,26 +48,16 @@ struct SignupProfileView: View {
                                     .opacity(0.2)
                             }
 
-                            Button(action: {
-                                showImagePicker = true
-                            }) {
-                                HStack {
-                                    Image(
-                                        systemName:
-                                            "person.crop.circle.badge.plus"
+                            SmallPillButton(
+                                image: "person.crop.circle.badge.plus",
+                                text: selectedUIImage == nil
+                                    ? "Add Avatar" : "Edit Avatar",
+                                action: {
+                                    ModernPhotoPicker(
+                                        selectedImage: $selectedUIImage
                                     )
-                                    .foregroundColor(.imaginBlack)
-                                    Text(
-                                        selectedUIImage == nil
-                                            ? "Add Avatar" : "Edit Avatar"
-                                    )
-                                    .foregroundColor(.imaginBlack)
                                 }
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 16)
-                                .background(.thinMaterial)
-                                .clipShape(Capsule())
-                            }
+                            )
                         }
                         .padding(.top, 32)
                         .padding(.bottom, 32)
@@ -76,37 +73,94 @@ struct SignupProfileView: View {
                                 Text("Enter your name and a bit about yourself")
                                     .multilineTextAlignment(.center)
                                     .font(.system(size: 16))
+
                                 Divider()
                                 TextField(
                                     "Enter your name",
                                     text: $profileName
                                 )
+                                .id("nameField")
+                                .focused($isNameFieldFocused)
                                 .font(.title)
-                                .onSubmit {
-                                    //                                    validate(name: username)
+                                .onChange(of: profileName) { value in
+                                    if !profileNameError.isEmpty {
+                                        withAnimation {
+                                            profileNameError = ""
+                                        }
+                                    }
                                 }
                                 .multilineTextAlignment(.center)
                                 .textInputAutocapitalization(.never)
                                 .disableAutocorrection(true)
                                 .padding(.horizontal, 8)
 
+                                if !profileNameError.isEmpty {
+                                    Text(profileNameError)
+                                        .foregroundColor(.red)
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.top, 4)
+                                }
+
                                 Divider()
 
-                                MultilineTextField(
-                                    placeholder: "Something about yourself",
-                                    text: $profileAboutMe
+                                TextField(
+                                    "Something about you...",
+                                    text: $profileAboutMe,
+                                    axis: .vertical
                                 )
-                                .frame(minHeight: 100)
+                                .lineLimit(2...4)
+                                .id("aboutMeField")
+                                .focused($isAboutMeFieldFocused)
+                                .font(.body)
+                                .onChange(of: profileName) { value in
+                                    if !profileAboutMeError.isEmpty {
+                                        withAnimation {
+                                            profileAboutMeError = ""
+                                        }
+                                    }
+                                }
+                                .multilineTextAlignment(.center)
+                                .padding(.horizontal, 8)
+
+                                if !profileAboutMeError.isEmpty {
+                                    Text(profileAboutMeError)
+                                        .foregroundColor(.red)
+                                        .font(.caption)
+                                        .padding(.horizontal, 8)
+                                        .padding(.top, 4)
+                                }
                             }.padding()
 
-                        }.fixedSize(horizontal: false, vertical: true)
+                        }
+                        .padding()
+                        .fixedSize(horizontal: false, vertical: true)
 
-                    }.padding()
+                    }
+                    .scrollDismissesKeyboard(.interactively)
+                    .onChange(of: isNameFieldFocused) { focused in
+                        if focused {
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                proxy.scrollTo("nameField", anchor: .center)
+                            }
+                        }
+                    }
+                    .onChange(of: isAboutMeFieldFocused) { focused in
+                        if focused {
+                            withAnimation(.easeInOut(duration: 0.5)) {
+                                proxy.scrollTo("aboutMeField", anchor: .center)
+                            }
+                        }
+                    }
                 }
-            }.navigationBarItems(
-                leading:
+
+            }
+            .navigationBarBackButtonHidden(true)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
                     Button(action: {
-                        print("pressed!!")
+                        // go to next signup step
+                        signupState.navigateToPrev()
                     }) {
                         HStack {
                             Image(systemName: "chevron.backward")
@@ -115,34 +169,31 @@ struct SignupProfileView: View {
                         }
                         .padding(10)
                         .background(.thinMaterial)
-                        .cornerRadius(45)
-                    },
-                trailing:
-                    Button(action: {
-                        print("pressed!!")
-                    }) {
-                        HStack {
-                            Text("Next")
-                                .font(.system(size: 16).bold())
-                                .foregroundColor(.imaginBlack)
-                                .padding(.vertical, 10)
-                                .padding(.horizontal, 16)
-
-                        }
-                        .background(.thinMaterial)
-                        .cornerRadius(45)
+                        .clipShape(Circle())
                     }
-            )
-        }
-        .sheet(isPresented: $showImagePicker) {
-            ImagePicker(image: $selectedUIImage, isShown: $showImagePicker)
+                }
+
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: {
+                        // validation and navigation logic
+                        signupState.navigateToNext()
+                    }) {
+                        Text("Next")
+                            .font(.system(size: 16).bold())
+                            .foregroundColor(.imaginBlack)
+                            .padding(.vertical, 10)
+                            .padding(.horizontal, 16)
+                            .background(.thinMaterial)
+                            .clipShape(Capsule())
+                    }
+                }
+            
         }
         .onChange(of: selectedUIImage) { newImage in
             if let newImage = newImage {
                 avatarImage = Image(uiImage: newImage)
             }
         }
-
     }
 }
 

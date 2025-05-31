@@ -9,29 +9,20 @@ import SwiftUI
 import stellarsdk
 
 struct SignupSecretView: View {
+    @EnvironmentObject var signupState: SignupState
+
     @State private var isLoadingSecret: Bool = false
     @State private var mnemonic: String?
+    @State private var showCopiedMessage: Bool = false
 
     var body: some View {
-        NavigationView {
-            BackgroundView(linearGradient: Gradient.threeColorAngled) {
-                VStack {
-                    ThinCard {
-                        VStack {
-                            // title text
-                            Text("Your account secret.")
-                                .font(.system(size: 24).bold())
-                                .padding(4)
-                            // content text
-                            Text(
-                                "This is your account secret. It's used to restore your account. Save it in a secure place, you might need it in the future!"
-                            )
-                            .font(.system(size: 16))
-                            .padding(.bottom, 8)
-
-                        }
-                        .padding()
-
+        BackgroundView(linearGradient: Gradient.threeColorAngled) {
+            ScrollView {
+                VStack(alignment: .center) {
+                    InfoCard(title: "Your account secret.") {
+                        Text(
+                            "This is your account secret. It's used to restore your account. Save it in a secure place, you might need it in the future!"
+                        )
                     }.fixedSize(horizontal: false, vertical: true)
 
                     ThinCard {
@@ -55,62 +46,87 @@ struct SignupSecretView: View {
                                         in: Capsule()
                                     )
                             }
-                            Divider()
-                            Button(action: {
-                                print("pressed!!")
-                            }) {
-                                HStack {
-                                    Image(systemName: "document.on.document")
-                                        .font(.system(size: 16))
-                                        .foregroundColor(.imaginBlack)
-                                    Text("Copy secret")
-                                        .font(.system(size: 16).bold())
-                                        .foregroundColor(.imaginBlack)
+
+                            Divider().padding(.vertical, 8)
+
+                            SmallPillButton(
+                                image: "document.on.document",
+                                text: showCopiedMessage
+                                    ? "Copied!" : "Copy secret",
+                                action: {
+                                    if let mnemonic = mnemonic {
+                                        UIPasteboard.general.string =
+                                            mnemonic
+                                        // Optionally add haptic feedback
+                                        let impactFeedback =
+                                            UIImpactFeedbackGenerator(
+                                                style: .medium
+                                            )
+                                        impactFeedback.impactOccurred()
+                                    }
+
+                                    withAnimation {
+                                        showCopiedMessage = true
+                                    }
+
+                                    DispatchQueue.main.asyncAfter(
+                                        deadline: .now() + 2
+                                    ) {
+                                        withAnimation {
+                                            showCopiedMessage = false
+                                        }
+                                    }
                                 }
-                                .padding(.vertical, 8)
-                                .padding(.horizontal, 16)
-                                .background(.thinMaterial)
-                                .cornerRadius(45)
-                            }
+                            )
                         }.padding()
                     }
-                    .fixedSize(horizontal: false, vertical: true)
+                    .fixedSize(
+                        horizontal: false,
+                        vertical: true,
+                    )
 
-                }.padding()
-
-            }.onAppear {
+                }
+                .padding()
+            }
+        }.onAppear {
+            if let mnemonic = signupState.mnemonic {
+                self.mnemonic = mnemonic
+            } else {
                 generateMnemonic()
             }
-            .navigationBarItems(
-                leading:
-                    Button(action: {
-                        print("pressed!!")
-                    }) {
-                        HStack {
-                            Image(systemName: "chevron.backward")
-                                .font(.system(size: 16).bold())
-                                .foregroundColor(.imaginBlack)
-                        }
-                        .padding(10)
-                        .background(.thinMaterial)
-                        .cornerRadius(45)
-                    },
-                trailing:
-                    Button(action: {
-                        print("pressed!!")
-                    }) {
-                        HStack {
-                            Text("Next")
-                                .font(.system(size: 16).bold())
-                                .foregroundColor(.imaginBlack)
-                                .padding(.vertical, 10)
-                                .padding(.horizontal, 16)
-
-                        }
-                        .background(.thinMaterial)
-                        .cornerRadius(45)
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: {
+                    // go to next signup step
+                    signupState.navigateToPrev()
+                }) {
+                    HStack {
+                        Image(systemName: "chevron.backward")
+                            .font(.system(size: 16).bold())
+                            .foregroundColor(.imaginBlack)
                     }
-            )
+                    .padding(10)
+                    .background(.thinMaterial)
+                    .clipShape(Circle())
+                }
+            }
+
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    // validation and navigation logic
+                    signupState.navigateToNext()
+                }) {
+                    Text("Next")
+                        .font(.system(size: 16).bold())
+                        .foregroundColor(.imaginBlack)
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 16)
+                        .background(.thinMaterial)
+                        .clipShape(Capsule())
+                }
+            }
         }
     }
 

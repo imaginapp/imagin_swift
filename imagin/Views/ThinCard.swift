@@ -30,6 +30,7 @@ struct ThinCard<Content: View>: View {
                     .stroke(.thinMaterial, lineWidth: cardStroke)
             }
             content
+                .fixedSize(horizontal: false, vertical: true)
         }
     }
 }
@@ -54,6 +55,53 @@ struct UltraThinCard<Content: View>: View {
                     .stroke(.ultraThinMaterial, lineWidth: cardStroke)
             }
             content
+                .fixedSize(horizontal: false, vertical: true)
+        }
+    }
+}
+
+struct InfoCard<Content: View>: View {
+    let title: String
+    let icon: String?
+    let content: Content
+
+    init(
+        icon: String,
+        title: String,
+        @ViewBuilder content: () -> Content,
+    ) {
+        self.content = content()
+        self.title = title
+        self.icon = icon
+    }
+
+    init(
+        title: String,
+        @ViewBuilder content: () -> Content,
+    ) {
+        self.content = content()
+        self.title = title
+        self.icon = nil
+    }
+
+    var body: some View {
+        ThinCard {
+            VStack {
+                if icon != nil {
+                    Image(systemName: icon!)
+                        .font(.title2)
+                        .foregroundColor(.imaginBlack)
+                        .padding(.bottom, 2)
+                }
+                Text(title)
+                    .font(.title2).fontWeight(.semibold)
+                    .foregroundStyle(Color.imaginBlack)
+                    .padding(.bottom, 4)
+
+                content
+                    .fixedSize(horizontal: false, vertical: true)
+
+            }.padding()
         }
     }
 }
@@ -77,14 +125,39 @@ struct UltraThinCard<Content: View>: View {
                         .padding()
                 }
             }.padding()
-            UltraThinCard(content:  {
-                VStack {
-                    Image("LogoBlack")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .padding()
+            UltraThinCard(
+                content: {
+                    VStack {
+                        Image("LogoBlack")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .padding()
+                    }
+                },
+                withBorder: false
+            )
+            .padding()
+
+            InfoCard(
+                icon: "text.document",
+                title: "Title of InfoCard",
+                content: {
+                    VStack {
+                        Text(
+                            "By Creating an account you agree to our Terms of Service."
+                        )
+                        .multilineTextAlignment(.center)
+
+                        SmallPillButton(
+                            image: "text.document",
+                            text: "View Terms of Service"
+                        ) {
+                            print("Pressed!!")
+                        }
+
+                    }
                 }
-            }, withBorder: false).padding()
+            ).padding()
         }
     }
 }

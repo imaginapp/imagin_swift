@@ -8,8 +8,17 @@
 import SwiftUI
 
 struct SignupInviteCodeView: View {
+    @EnvironmentObject var signupState: SignupState
+    @EnvironmentObject var appState: AppState
+    // dismiss to close sheet
+    @Environment(\.dismiss) private var dismiss
+
     @State private var code: String = ""
+    @State private var isCheckingCode: Bool = false
+
+    @State private var errorMessage: String?
     @FocusState private var isFocused: Bool
+
     private let maxLength = 6
 
     var body: some View {
@@ -18,8 +27,8 @@ struct SignupInviteCodeView: View {
                 ThinCard {
                     VStack {
                         Text("Invite code")
-                            .font(.system(size: 24).bold())
-                            .padding(4)
+                            .font(.title)
+                            .padding(5)
 
                         Text(
                             "To create an account you will need a invite code. Please enter the code below to proceed."
@@ -27,56 +36,147 @@ struct SignupInviteCodeView: View {
                         .multilineTextAlignment(.center)
                         .font(.system(size: 16))
 
-                        inviteCodeInput()
-                            .padding(.vertical)
-
-                        FullWidthPillButton(
-                            text: "Verify Code",
-                            action: {
-                                print("Code entered: \(code)")
+                        inviteCodeInput(
+                            onChange: { code in
+                                if errorMessage != nil {
+                                    // clear erorr message
+                                    errorMessage = nil
+                                }
+                                if code.count == maxLength {
+                                    verifyCode(code)
+                                }
                             }
-                        ).padding()
+                        )
+                        .disabled(isCheckingCode)
+                        .padding(.vertical)
+
+                        Text(errorMessage ?? " ")
+                            .font(.body)
+                            .foregroundColor(.red)
+
+                        if isCheckingCode {
+                            ProgressView()
+                                .progressViewStyle(
+                                    CircularProgressViewStyle(
+                                        tint: .imaginBlack
+                                    )
+                                )
+                                .scaleEffect(2.0, anchor: .center)
+                                .padding(.vertical, 18)
+                        } else {
+                            PillButton(
+                                text: "Verify Code",
+                                disabled: code.count != 6,
+                                action: {
+                                    verifyCode(code)
+                                },
+                            )
+                        }
+
                     }
                     .padding()
                 }
-                ThinCard {
-                    VStack {
-                        Image(systemName: "ellipsis.rectangle").font(
-                            .system(size: 24)
-                        ).padding(.bottom, 5)
-                        Text("Need an invite code?")
-                            .font(.system(size: 18)).bold().foregroundStyle(
-                                Color.imaginBlack
-                            ).padding(.bottom, 1)
-                        Text("Click here to request an invite code")
-                            .multilineTextAlignment(.center)
-                            .font(.system(size: 16))
+                InfoCard(
+                    icon: "ellipsis.rectangle",
+                    title: "need an invite code?"
+                ) {
+                    Text("Click here to request an invite code")
+                        .multilineTextAlignment(.center)
 
-                        Button(action: {
+                    SmallPillButton(
+                        image: "ellipsis.rectangle",
+                        text: "Get Invite Code",
+                        action: {
                             print("pressed!!")
-                        }) {
-                            HStack {
-                                Image(systemName: "ellipsis.rectangle").font(
-                                    .system(size: 16)
-                                )
-                                .foregroundColor(.imaginBlack)
-                                Text("Get Invite Code")
-                                    .font(.system(size: 16).bold())
-                                    .foregroundColor(.imaginBlack)
-                            }
-                            .padding(.vertical, 8)
-                            .padding(.horizontal, 16)
-                            .background(.thinMaterial)
-                            .cornerRadius(45)
                         }
-                    }.padding()
+                    )
                 }
                 .fixedSize(horizontal: false, vertical: true)
-            }.padding()
+
+            }
+            .padding()
+        }
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button(action: { dismiss() }) {
+                    Image(systemName: "xmark")
+                        .font(.system(size: 16).bold())
+                        .foregroundColor(.imaginBlack)
+                        .padding(10)
+                        .background(.thinMaterial)
+                        .cornerRadius(45)
+                }
+            }
+
+            ToolbarItem(placement: .navigationBarTrailing) {
+                Button(action: {
+                    // validation and navigation logic
+                    signupState.navigateToNext()
+                }) {
+                    Text("Next")
+                        .font(.system(size: 16).bold())
+                        .foregroundColor(.imaginBlack)
+                        .padding(.vertical, 10)
+                        .padding(.horizontal, 16)
+                        .background(.thinMaterial)
+                        .clipShape(Capsule())
+                }
+                .disabled(signupState.inviteCode?.isEmpty ?? true)
+            }
+
+        }.onAppear {
+            if signupState.inviteCode != nil {
+                code = signupState.inviteCode!
+            }
+        }
+
+    }
+
+    private func verifyCode(_ code: String) {
+        errorMessage = nil
+
+        if code.isEmpty {
+            errorMessage = "Invite code is required"
+            return
+        }
+
+        if code == signupState.inviteCode {
+            self.signupState.navigateToNext()
+            return
+        }
+
+        self.isCheckingCode = true
+
+        Task {
+            defer {
+                Task { @MainActor in
+                    self.isCheckingCode = false
+                }
+            }
+            do {
+                let response = try await appState.grpcClient.validateInviteCode(
+                    code
+                )
+                await MainActor.run {
+                    if response.isValid {
+                        self.signupState.inviteCode = code
+                        self.signupState.navigateToNext()
+                    } else {
+                        errorMessage = "Invite code is invalid"
+                    }
+                }
+            } catch {
+                await MainActor.run {
+                    errorMessage = "Invite code is invalid"
+                }
+            }
         }
     }
 
-    private func inviteCodeInput() -> some View {
+    private func inviteCodeInput(onChange: @escaping (String) -> Void)
+        -> some View
+    {
         return ZStack(alignment: .center) {
 
             // boxes
@@ -118,6 +218,7 @@ struct SignupInviteCodeView: View {
                     if newValue.count > maxLength {
                         code = String(newValue.prefix(maxLength))
                     }
+                    onChange(code)
                 }
                 .multilineTextAlignment(.center)
 

@@ -151,7 +151,7 @@ private struct _FlowLayout<Data, Content>: View where Data: RandomAccessCollecti
 }
 
 #Preview {
-    var words: String = "one two three four five six seven eight nine ten eleven twelve"
+    let words: String = "one two three four five six seven eight nine ten eleven twelve"
     VStack(spacing: 20) {
         Text("Left Aligned")
         FlowLayout(

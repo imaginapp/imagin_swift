@@ -17,4 +17,17 @@ extension ImaginGrpcClient {
             methodName: "getVersion"
         )
     }
+    
+    func validateInviteCode(_ code: String) async throws -> Imagin_External_Service_V1_ValidateInviteCodeResponse {
+        return try await execute(
+            client.validateInviteCode,
+            request: {
+                var req = Imagin_External_Service_V1_ValidateInviteCodeRequest()
+                req.code = code
+                return req
+            }(),
+            methodName: "validateInviteCode"
+        )
+    }
+    
 }

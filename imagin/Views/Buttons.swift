@@ -31,7 +31,7 @@ struct CloseXButton: View {
             }
             .padding()
             .background(background)
-            .cornerRadius(45)
+            .clipShape(Circle())
         }
     }
 }
@@ -42,19 +42,22 @@ struct FullWidthPillButton: View {
     let color: Color
     let action: () -> Void
     let background: Material
+    let disabled: Bool
 
     init(
         image: String? = nil,
         text: String,
         color: Color = .imaginBlack,
         background: Material = .thinMaterial,
-        action: @escaping () -> Void
+        disabled: Bool = false,
+        action: @escaping () -> Void,
     ) {
         self.image = image
         self.text = text
         self.color = color
         self.action = action
         self.background = background
+        self.disabled = disabled
     }
 
     var body: some View {
@@ -71,14 +74,62 @@ struct FullWidthPillButton: View {
                     .foregroundColor(color)
                 Spacer()
             }
-            .padding()
+            .padding(.vertical, 16)
             .background(background)
-            .cornerRadius(45)
+            .clipShape(Capsule())
         }
+        .disabled(disabled)
+        .opacity(disabled ? 0.5 : 1)
     }
 }
 
 struct PillButton: View {
+    let image: String?
+    let text: String
+    let color: Color
+    let action: () -> Void
+    let background: Material
+    let disabled: Bool
+
+    init(
+        image: String? = nil,
+        text: String,
+        color: Color = .imaginBlack,
+        background: Material = .thinMaterial,
+        disabled: Bool = false,
+        action: @escaping () -> Void,
+    ) {
+        self.image = image
+        self.text = text
+        self.color = color
+        self.action = action
+        self.background = background
+        self.disabled = disabled
+    }
+
+    var body: some View {
+        Button(action: action) {
+            HStack {
+                if image != nil {
+                    Image(systemName: image!)
+                        .font(.system(size: 20).bold())
+                        .foregroundColor(color)
+                }
+                Text(text)
+                    .font(.system(size: 20).bold())
+                    .foregroundColor(color)
+            }
+            .padding(.vertical, 16)
+            .padding(.horizontal, 24)
+            .background(background)
+            .clipShape(Capsule())
+        }
+        .disabled(disabled)
+        .opacity(disabled ? 0.5 : 1)
+    }
+}
+
+struct SmallPillButton: View {
     let image: String?
     let text: String
     let color: Color
@@ -104,16 +155,15 @@ struct PillButton: View {
             HStack {
                 if image != nil {
                     Image(systemName: image!)
-                        .font(.system(size: 20).bold())
                         .foregroundColor(color)
                 }
                 Text(text)
-                    .font(.system(size: 20).bold())
-                    .foregroundColor(color)
+                    .foregroundColor(.imaginBlack)
             }
-            .padding()
+            .padding(.vertical, 8)
+            .padding(.horizontal, 16)
             .background(background)
-            .cornerRadius(45)
+            .clipShape(Capsule())
         }
     }
 }
@@ -139,6 +189,15 @@ struct PillButton: View {
                 action: { print("pill pressed") }
             ).padding()
             PillButton(
+                image: "star",
+                text: "Press Me!",
+                action: { print("image pill pressed") }
+            ).padding()
+            SmallPillButton(
+                text: "Press Me!",
+                action: { print("pill pressed") }
+            ).padding()
+            SmallPillButton(
                 image: "star",
                 text: "Press Me!",
                 action: { print("image pill pressed") }
