@@ -8,7 +8,7 @@
 import SwiftUI
 import PhotosUI
 
-struct ModernPhotoPicker: View {
+struct CustomPhotoPicker: View {
     @Binding var selectedImage: UIImage?
     @State private var selectedItem: PhotosPickerItem?
     
@@ -18,11 +18,14 @@ struct ModernPhotoPicker: View {
             matching: .images,
             photoLibrary: .shared()
         ) {
-            SmallPillButton(
-                image: "person.crop.circle.badge.plus",
-                text: selectedImage == nil ? "Add Avatar" : "Edit Avatar",
-                action: {}
-            )
+            HStack {
+                Image(systemName: "person.crop.circle.badge.plus").foregroundColor(.imaginBlack)
+                Text(selectedImage == nil ? "Add Avatar" : "Edit Avatar").foregroundColor(.imaginBlack)
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 8)
+            .background(.thinMaterial)
+            .cornerRadius(20)
         }
         .onChange(of: selectedItem) { newItem in
             Task {

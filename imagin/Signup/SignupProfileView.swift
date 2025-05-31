@@ -48,15 +48,8 @@ struct SignupProfileView: View {
                                     .opacity(0.2)
                             }
 
-                            SmallPillButton(
-                                image: "person.crop.circle.badge.plus",
-                                text: selectedUIImage == nil
-                                    ? "Add Avatar" : "Edit Avatar",
-                                action: {
-                                    ModernPhotoPicker(
-                                        selectedImage: $selectedUIImage
-                                    )
-                                }
+                            CustomPhotoPicker(
+                                selectedImage: $selectedUIImage
                             )
                         }
                         .padding(.top, 32)
