@@ -34,15 +34,19 @@ struct SignupInviteCodeView: View {
                             "To create an account you will need a invite code. Please enter the code below to proceed."
                         )
                         .multilineTextAlignment(.center)
-                        .font(.system(size: 16))
+                        .font(.body)
 
-                        inviteCodeInput(
-                            onChange: { code in
-                                if errorMessage != nil {
-                                    // clear erorr message
-                                    errorMessage = nil
-                                }
-                                if code.count == maxLength {
+                        InviteCodeInputView(
+                            code: $code,
+                            maxLength: maxLength,
+                            isFocused: $isFocused,
+                            error: errorMessage != nil,
+                            onChange: { newCode in
+                                if errorMessage != nil { errorMessage = nil }
+                            },
+                            onSubmit: { newCode in
+                                if errorMessage != nil { errorMessage = nil }
+                                if newCode.count == maxLength {
                                     verifyCode(code)
                                 }
                             }
@@ -94,6 +98,7 @@ struct SignupInviteCodeView: View {
                 .fixedSize(horizontal: false, vertical: true)
 
             }
+            .scrollDismissesKeyboard(.interactively)
             .padding()
         }
         .navigationBarBackButtonHidden(true)
@@ -134,6 +139,10 @@ struct SignupInviteCodeView: View {
     }
 
     private func verifyCode(_ code: String) {
+        if isCheckingCode {
+            return
+        }
+
         errorMessage = nil
 
         if code.isEmpty {
@@ -173,64 +182,10 @@ struct SignupInviteCodeView: View {
             }
         }
     }
-
-    private func inviteCodeInput(onChange: @escaping (String) -> Void)
-        -> some View
-    {
-        return ZStack(alignment: .center) {
-
-            // boxes
-            HStack(spacing: 12) {
-                ForEach(0..<maxLength, id: \.self) { index in
-                    let isFilled = index < code.count
-                    ZStack {
-                        RoundedRectangle(cornerRadius: 8)
-                            .stroke(
-                                isFocused ? Color.imaginBlack : Color.gray,
-                                lineWidth: 1
-                            )
-                            .frame(width: 40, height: 45)
-
-                        if isFilled {
-                            let charIndex = code.index(
-                                code.startIndex,
-                                offsetBy: index
-                            )
-                            Text(String(code[charIndex]))
-                                .font(.system(size: 24, weight: .medium))
-                        }
-                    }
-                }
-            }
-            // text input
-            TextField("", text: $code)
-                .focused($isFocused)
-                .keyboardType(.default)
-                .textContentType(.oneTimeCode)  // Enables auto-fill from SMS
-                .textInputAutocapitalization(.characters)
-                .frame(width: 280, height: 60)
-                .opacity(0.001)  // Almost invisible but still functional
-                .onChange(of: code) { newValue in
-                    code = newValue.uppercased()
-                    if code.count > maxLength {
-                        code = String(code.prefix(maxLength))
-                    }
-                    if newValue.count > maxLength {
-                        code = String(newValue.prefix(maxLength))
-                    }
-                    onChange(code)
-                }
-                .multilineTextAlignment(.center)
-
-        }
-        .frame(height: 60)
-        .contentShape(Rectangle())  // Makes the entire area tappable
-        .onTapGesture {
-            isFocused = true
-        }
-    }
 }
 
 #Preview {
     SignupInviteCodeView()
+        .environmentObject(SignupState())
+        .environmentObject(AppState(host: "preview.example.com"))
 }
