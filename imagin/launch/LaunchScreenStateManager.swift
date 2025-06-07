@@ -19,6 +19,10 @@ final class LaunchScreenStateManager: ObservableObject {
 
     @MainActor func finished() {
         Task {
+            self.state = .closing
+
+            try? await Task.sleep(for: .seconds(0.7))
+            
             self.state = .finished
         }
     }

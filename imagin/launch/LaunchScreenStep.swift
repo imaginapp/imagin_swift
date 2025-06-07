@@ -7,6 +7,7 @@
 
 enum LaunchScreenStep {
     case loading
+    case closing
     case finished
 }
 

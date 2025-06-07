@@ -10,12 +10,12 @@ import SwiftUI
 struct LaunchScreenView: View {
     @EnvironmentObject private var launchScreenState: LaunchScreenStateManager
 
-    @State private var pulseScale: CGFloat = 1.0
-    @State private var circleScale: CGFloat = 1.0
+    @State private var pulseScale: CGFloat = 1
+    @State private var circleScale: CGFloat = 1
     @State private var didAnimateLoading: Bool = false
     @State private var didAnimateFinished: Bool = false
 
-    private let baseCircleSize: CGFloat = 100
+    private let baseCircleSize: CGFloat = 20
     private var fullScreenScale: CGFloat {
         let screen = UIScreen.main.bounds
         let diameter = sqrt(
@@ -29,32 +29,65 @@ struct LaunchScreenView: View {
             Color.imaginBlack.ignoresSafeArea()
 
             ZStack {
-                Image("LogoWhite")
-                    .resizable()
-                    .aspectRatio(contentMode: .fit)
-                    .padding()
+                Color.imaginBlack.ignoresSafeArea()
 
-                Circle()
-                    .fill(Color.imaginYellow)
-                    .frame(width: baseCircleSize, height: baseCircleSize)
-                    .scaleEffect(circleScale)
-                    .zIndex(3)
+                GeometryReader { geo in
+                    let circleDiameter = geo.size.width * 0.07
 
-                Circle()
-                    .fill(Color.imaginYellow)
-                    .frame(width: baseCircleSize, height: baseCircleSize)
-                    .scaleEffect(pulseScale)
-                    .zIndex(1)
-                    .onAppear {
-                        withAnimation(
-                            Animation.easeInOut(duration: 0.7).repeatForever(
-                                autoreverses: true
+                    ZStack {
+                        Image("LogoWhite")
+                            .resizable()
+                            .aspectRatio(contentMode: .fit)
+                            .padding()
+                            .frame(
+                                width: geo.size.width,
+                                height: geo.size.height
                             )
-                        ) {
-                            pulseScale = 2.0
-                        }
 
+                        // Calculate the position as a percentage of the image's size
+                        let circleX = geo.size.width * 0.7616  // 75% from the left
+                        let circleY = geo.size.height * 0.5427  // 55% from the top
+
+                        Circle()
+                            .fill(Color.imaginYellow)
+                            .frame(
+                                width: circleDiameter,
+                                height: circleDiameter
+                            )
+                            .zIndex(3)
+                            .scaleEffect(circleScale)
+                            .position(x: circleX, y: circleY)
+
+                        Circle()
+                            .fill(Color.imaginYellow)
+                            .frame(
+                                width: circleDiameter,
+                                height: circleDiameter
+                            )
+                            .scaleEffect(pulseScale)
+                            .shadow(
+                                color: Color.imaginYellow.opacity(0.9),
+                                radius: 12 * pulseScale
+                            )
+                            .shadow(
+                                color: Color.imaginWhite.opacity(0.3),
+                                radius: 48 * pulseScale
+                            )
+
+                            .position(x: circleX, y: circleY)
+                            .onAppear {
+                                withAnimation(
+                                    Animation.easeInOut(duration: 1)
+                                        .repeatForever(
+                                            autoreverses: true
+                                        )
+                                ) {
+                                    pulseScale = 1.2
+                                }
+
+                            }
                     }
+                }
             }
 
         }
@@ -88,7 +121,7 @@ struct LaunchScreenView: View {
                 didAnimateLoading = true
                 didAnimateFinished = false
             }
-        case .finished:
+        case .closing:
             if !didAnimateFinished {
                 circleScale = 1.0
                 withAnimation(.easeInOut(duration: 0.7)) {
@@ -97,6 +130,8 @@ struct LaunchScreenView: View {
                 didAnimateFinished = true
                 didAnimateLoading = false
             }
+        case .finished:
+            break
         }
     }
 }
@@ -116,7 +151,7 @@ struct LaunchScreenView_Previews: PreviewProvider {
                         launchScreenStateManager.set(state: step)
                     }
 
-                Text("the state is: \(launchScreenStateManager.state)")
+                //                Text("the state is: \(launchScreenStateManager.state)")
             }
         }
     }
