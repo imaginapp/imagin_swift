@@ -24,11 +24,6 @@ struct ImaginApp: App {
                 if launchScreenState.state != .finished {
                     LaunchScreenView()
                         .environmentObject(launchScreenState)
-                        .opacity(launchScreenState.state == .closing ? 0 : 1)
-                        .animation(
-                            .easeInOut(duration: 0.7),
-                            value: launchScreenState.state
-                        )
                         .onTapGesture {
                             launchScreenState.finished()
                         }

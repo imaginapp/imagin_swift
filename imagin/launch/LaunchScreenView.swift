@@ -27,66 +27,63 @@ struct LaunchScreenView: View {
     var body: some View {
         ZStack {
             Color.imaginBlack.ignoresSafeArea()
+            Gradient.threeColorAngled.ignoresSafeArea()
 
-            ZStack {
-                Color.imaginBlack.ignoresSafeArea()
+            GeometryReader { geo in
+                let circleDiameter = geo.size.width * 0.07
 
-                GeometryReader { geo in
-                    let circleDiameter = geo.size.width * 0.07
+                ZStack {
+                    Image("LogoWhite")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .padding()
+                        .frame(
+                            width: geo.size.width,
+                            height: geo.size.height
+                        )
 
-                    ZStack {
-                        Image("LogoWhite")
-                            .resizable()
-                            .aspectRatio(contentMode: .fit)
-                            .padding()
-                            .frame(
-                                width: geo.size.width,
-                                height: geo.size.height
-                            )
+                    // Calculate the position as a percentage of the image's size
+                    let circleX = geo.size.width * 0.7616  // 75% from the left
+                    let circleY = geo.size.height * 0.5427  // 55% from the top
 
-                        // Calculate the position as a percentage of the image's size
-                        let circleX = geo.size.width * 0.7616  // 75% from the left
-                        let circleY = geo.size.height * 0.5427  // 55% from the top
+                    Circle()
+                        .fill(Color.imaginYellow)
+                        .frame(
+                            width: circleDiameter,
+                            height: circleDiameter
+                        )
+                        .zIndex(3)
+                        .scaleEffect(circleScale)
+                        .position(x: circleX, y: circleY)
 
-                        Circle()
-                            .fill(Color.imaginYellow)
-                            .frame(
-                                width: circleDiameter,
-                                height: circleDiameter
-                            )
-                            .zIndex(3)
-                            .scaleEffect(circleScale)
-                            .position(x: circleX, y: circleY)
+                    Circle()
+                        .fill(Color.imaginYellow)
+                        .frame(
+                            width: circleDiameter,
+                            height: circleDiameter
+                        )
+                        .scaleEffect(pulseScale)
+                        .shadow(
+                            color: Color.imaginYellow.opacity(0.9),
+                            radius: 12 * pulseScale
+                        )
+                        .shadow(
+                            color: Color.imaginWhite.opacity(0.3),
+                            radius: 48 * pulseScale
+                        )
 
-                        Circle()
-                            .fill(Color.imaginYellow)
-                            .frame(
-                                width: circleDiameter,
-                                height: circleDiameter
-                            )
-                            .scaleEffect(pulseScale)
-                            .shadow(
-                                color: Color.imaginYellow.opacity(0.9),
-                                radius: 12 * pulseScale
-                            )
-                            .shadow(
-                                color: Color.imaginWhite.opacity(0.3),
-                                radius: 48 * pulseScale
-                            )
-
-                            .position(x: circleX, y: circleY)
-                            .onAppear {
-                                withAnimation(
-                                    Animation.easeInOut(duration: 1)
-                                        .repeatForever(
-                                            autoreverses: true
-                                        )
-                                ) {
-                                    pulseScale = 1.2
-                                }
-
+                        .position(x: circleX, y: circleY)
+                        .onAppear {
+                            withAnimation(
+                                Animation.easeInOut(duration: 1)
+                                    .repeatForever(
+                                        autoreverses: true
+                                    )
+                            ) {
+                                pulseScale = 1.2
                             }
-                    }
+
+                        }
                 }
             }
 
