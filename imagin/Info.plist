@@ -4,5 +4,10 @@
 <dict>
 	<key>DevinApiKey</key>
 	<string>$(DEVIN_API_KEY)</string>
+	<key>UILaunchScreen</key>
+	<dict>
+		<key>UIColorName</key>
+		<string>LaunchScreenBackgroundColor</string>
+	</dict>
 </dict>
 </plist>
