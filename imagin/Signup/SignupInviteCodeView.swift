@@ -23,83 +23,89 @@ struct SignupInviteCodeView: View {
 
     var body: some View {
         BackgroundView(linearGradient: Gradient.threeColorAngled) {
-            VStack {
-                ThinCard {
-                    VStack {
-                        Text("Invite code")
-                            .font(.title)
-                            .padding(5)
+            ScrollView {
+                VStack {
+                    ThinCard {
+                        VStack {
+                            Text("Invite code")
+                                .font(.title)
+                                .padding(5)
 
-                        Text(
-                            "To create an account you will need a invite code. Please enter the code below to proceed."
-                        )
-                        .multilineTextAlignment(.center)
-                        .font(.body)
+                            Text(
+                                "To create an account you will need a invite code. Please enter the code below to proceed."
+                            )
+                            .multilineTextAlignment(.center)
+                            .font(.body)
 
-                        InviteCodeInputView(
-                            code: $code,
-                            maxLength: maxLength,
-                            isFocused: $isFocused,
-                            error: errorMessage != nil,
-                            onChange: { newCode in
-                                if errorMessage != nil { errorMessage = nil }
-                            },
-                            onSubmit: { newCode in
-                                if errorMessage != nil { errorMessage = nil }
-                                if newCode.count == maxLength {
-                                    verifyCode(code)
+                            InviteCodeInputView(
+                                code: $code,
+                                maxLength: maxLength,
+                                isFocused: $isFocused,
+                                error: errorMessage != nil,
+                                onChange: { newCode in
+                                    if errorMessage != nil {
+                                        errorMessage = nil
+                                    }
+                                },
+                                onSubmit: { newCode in
+                                    if errorMessage != nil {
+                                        errorMessage = nil
+                                    }
+                                    if newCode.count == maxLength {
+                                        verifyCode(code)
+                                    }
                                 }
+                            )
+                            .disabled(isCheckingCode)
+                            .padding(.vertical)
+
+                            Text(errorMessage ?? " ")
+                                .font(.body)
+                                .foregroundColor(.red)
+
+                            if isCheckingCode {
+                                ProgressView()
+                                    .progressViewStyle(
+                                        CircularProgressViewStyle(
+                                            tint: .imaginBlack
+                                        )
+                                    )
+                                    .scaleEffect(2.0, anchor: .center)
+                                    .padding(.vertical, 18)
+                            } else {
+                                PillButton(
+                                    text: "Verify Code",
+                                    disabled: code.count != 6,
+                                    action: {
+                                        verifyCode(code)
+                                    },
+                                )
+                            }
+
+                        }
+                        .padding()
+                    }
+                    InfoCard(
+                        icon: "ellipsis.rectangle",
+                        title: "need an invite code?"
+                    ) {
+                        Text("Click here to request an invite code")
+                            .multilineTextAlignment(.center)
+
+                        SmallPillButton(
+                            image: "ellipsis.rectangle",
+                            text: "Get Invite Code",
+                            action: {
+                                print("pressed!!")
                             }
                         )
-                        .disabled(isCheckingCode)
-                        .padding(.vertical)
-
-                        Text(errorMessage ?? " ")
-                            .font(.body)
-                            .foregroundColor(.red)
-
-                        if isCheckingCode {
-                            ProgressView()
-                                .progressViewStyle(
-                                    CircularProgressViewStyle(
-                                        tint: .imaginBlack
-                                    )
-                                )
-                                .scaleEffect(2.0, anchor: .center)
-                                .padding(.vertical, 18)
-                        } else {
-                            PillButton(
-                                text: "Verify Code",
-                                disabled: code.count != 6,
-                                action: {
-                                    verifyCode(code)
-                                },
-                            )
-                        }
-
                     }
-                    .padding()
-                }
-                InfoCard(
-                    icon: "ellipsis.rectangle",
-                    title: "need an invite code?"
-                ) {
-                    Text("Click here to request an invite code")
-                        .multilineTextAlignment(.center)
+                    .fixedSize(horizontal: false, vertical: true)
 
-                    SmallPillButton(
-                        image: "ellipsis.rectangle",
-                        text: "Get Invite Code",
-                        action: {
-                            print("pressed!!")
-                        }
-                    )
                 }
-                .fixedSize(horizontal: false, vertical: true)
+                .padding()
+            }.scrollDismissesKeyboard(.interactively)
 
-            }
-            .scrollDismissesKeyboard(.interactively)
-            .padding()
         }
         .navigationBarBackButtonHidden(true)
         .toolbar {
@@ -117,7 +123,7 @@ struct SignupInviteCodeView: View {
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
                     // validation and navigation logic
-                    signupState.navigateToNext()
+                    verifyCode(code)
                 }) {
                     Text("Next")
                         .font(.system(size: 16).bold())
@@ -127,10 +133,11 @@ struct SignupInviteCodeView: View {
                         .background(.thinMaterial)
                         .clipShape(Capsule())
                 }
-                .disabled(signupState.inviteCode?.isEmpty ?? true)
+                .disabled(code.count != 6)
             }
 
-        }.onAppear {
+        }
+        .onAppear {
             if signupState.inviteCode != nil {
                 code = signupState.inviteCode!
             }

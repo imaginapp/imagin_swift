@@ -23,7 +23,9 @@ class SignupState: ObservableObject {
     // profile
     @Published var name: String?
     @Published var aboutMe: String?
-    @Published var avatarPath: String?
+    @Published var avatarImage: Image?
+    
+    @Published var isSignupComplete: Bool = false
 
     enum SignupStep: String, CaseIterable, Hashable {
         case inviteCode = "invite"

@@ -9,12 +9,14 @@ import SwiftUI
 
 struct SignupStartView: View {
     @StateObject private var signupState = SignupState()
-
+    var onComplete: (() -> Void)? = nil
+    
     var body: some View {
         NavigationStack(path: $signupState.navigationPath) {
             SignupInviteCodeView()
                 .environmentObject(signupState)
-                .navigationDestination(for: SignupState.SignupStep.self) { step in
+                .navigationDestination(for: SignupState.SignupStep.self) {
+                    step in
                     switch step {
                     case .inviteCode:
                         SignupInviteCodeView()
@@ -26,7 +28,8 @@ struct SignupStartView: View {
                         SignupSecretView()
                             .environmentObject(signupState)
                     case .complete:
-                        Text("Complete")
+                        SignupCompleteView(onComplete: onComplete)
+                            .environmentObject(signupState)
                     }
                 }
         }

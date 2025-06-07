@@ -12,7 +12,6 @@ struct SignupSecretView: View {
     @EnvironmentObject var signupState: SignupState
 
     @State private var isLoadingSecret: Bool = false
-    @State private var mnemonic: String?
     @State private var showCopiedMessage: Bool = false
 
     var body: some View {
@@ -28,7 +27,9 @@ struct SignupSecretView: View {
                     ThinCard {
                         VStack {
                             FlowLayout(
-                                items: mnemonic?.split(separator: " ").map(
+                                items: signupState.mnemonic?.split(
+                                    separator: " "
+                                ).map(
                                     String.init
                                 ) ?? [],
                                 alignment: .center,
@@ -54,7 +55,7 @@ struct SignupSecretView: View {
                                 text: showCopiedMessage
                                     ? "Copied!" : "Copy secret",
                                 action: {
-                                    if let mnemonic = mnemonic {
+                                    if let mnemonic = signupState.mnemonic {
                                         UIPasteboard.general.string =
                                             mnemonic
                                         // Optionally add haptic feedback
@@ -89,9 +90,7 @@ struct SignupSecretView: View {
                 .padding()
             }
         }.onAppear {
-            if let mnemonic = signupState.mnemonic {
-                self.mnemonic = mnemonic
-            } else {
+            if signupState.mnemonic == nil {
                 generateMnemonic()
             }
         }
@@ -115,7 +114,6 @@ struct SignupSecretView: View {
 
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button(action: {
-                    // validation and navigation logic
                     signupState.navigateToNext()
                 }) {
                     Text("Next")
@@ -126,6 +124,7 @@ struct SignupSecretView: View {
                         .background(.thinMaterial)
                         .clipShape(Capsule())
                 }
+                .disabled(signupState.mnemonic == nil)
             }
         }
     }
@@ -140,12 +139,11 @@ struct SignupSecretView: View {
                 try AccountKeys.storeDefaultmnemonic(newMnemonic)
 
                 await MainActor.run {
-                    self.mnemonic = newMnemonic
+                    signupState.mnemonic = newMnemonic
                     self.isLoadingSecret = false
                 }
             } catch {
                 await MainActor.run {
-                    self.mnemonic = nil
                     self.isLoadingSecret = false
                 }
             }
@@ -156,4 +154,6 @@ struct SignupSecretView: View {
 
 #Preview {
     SignupSecretView()
+        .environmentObject(SignupState())
+        .environmentObject(AppState(host: "preview.example.com"))
 }

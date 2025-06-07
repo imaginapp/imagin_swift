@@ -68,7 +68,9 @@ struct SignupPageView: View {
 
             }.padding()
         }.fullScreenCover(isPresented: $showSignup) {
-            SignupStartView()
+            SignupStartView(onComplete: {
+                showSignup = false
+            })
         }
 
     }

@@ -41,7 +41,7 @@ struct InviteCodeInputView: View {
                     }
                 }
             }
-            .contentShape(Rectangle()) // Makes the entire HStack tappable
+            .contentShape(Rectangle())  // Makes the entire HStack tappable
             .onTapGesture {
                 isFocused.wrappedValue = true
             }
@@ -73,6 +73,15 @@ struct InviteCodeInputView: View {
             .accessibilityHint("Enter your \(maxLength)-character invite code")
         }
         .frame(height: 60)
+        .onAppear {
+            // help reduce the keyboard show time by preloading
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                isFocused.wrappedValue = true
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    isFocused.wrappedValue = false
+                }
+            }
+        }
     }
 }
 
