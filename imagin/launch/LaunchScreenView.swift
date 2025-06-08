@@ -16,6 +16,13 @@ struct LaunchScreenView: View {
     @State private var didAnimateFinished: Bool = false
 
     private let baseCircleSize: CGFloat = 20
+    // Ratio of the circle's diameter to the width of the logo/image area
+    private let circleDiameterRatio: CGFloat = 0.07
+    // X and Y ratios are the relative position of the yellow circle on the logo (as a percentage of width/height)
+    private let circleXRatio: CGFloat = 0.7616 // 76% from the left
+    private let circleYRatio: CGFloat = 0.5427 // 54% from the top
+    private let animationDuration: Double = 0.7
+    
     private var fullScreenScale: CGFloat {
         let screen = UIScreen.main.bounds
         let diameter = sqrt(
@@ -30,7 +37,7 @@ struct LaunchScreenView: View {
             Gradient.threeColorAngled.ignoresSafeArea()
 
             GeometryReader { geo in
-                let circleDiameter = geo.size.width * 0.07
+                let circleDiameter = geo.size.width * circleDiameterRatio
 
                 ZStack {
                     Image("LogoWhite")
@@ -42,10 +49,6 @@ struct LaunchScreenView: View {
                             height: geo.size.height
                         )
 
-                    // Calculate the position as a percentage of the image's size
-                    let circleX = geo.size.width * 0.7616  // 75% from the left
-                    let circleY = geo.size.height * 0.5427  // 55% from the top
-
                     Circle()
                         .fill(Color.imaginYellow)
                         .frame(
@@ -54,7 +57,7 @@ struct LaunchScreenView: View {
                         )
                         .zIndex(3)
                         .scaleEffect(circleScale)
-                        .position(x: circleX, y: circleY)
+                        .position(circlePosition(in: geo.size))
 
                     Circle()
                         .fill(Color.imaginYellow)
@@ -71,11 +74,10 @@ struct LaunchScreenView: View {
                             color: Color.imaginWhite.opacity(0.3),
                             radius: 48 * pulseScale
                         )
-
-                        .position(x: circleX, y: circleY)
+                        .position(circlePosition(in: geo.size))
                         .onAppear {
                             withAnimation(
-                                Animation.easeInOut(duration: 1)
+                                Animation.easeInOut(duration: animationDuration)
                                     .repeatForever(
                                         autoreverses: true
                                     )
@@ -95,6 +97,10 @@ struct LaunchScreenView: View {
             handleStepChange(newState)
         }
     }
+    
+    private func circlePosition(in size: CGSize) -> CGPoint {
+        CGPoint(x: size.width * circleXRatio, y: size.height * circleYRatio)
+    }
 
     private func setupInitialState() {
         if launchScreenState.state == .loading {
@@ -111,8 +117,8 @@ struct LaunchScreenView: View {
         switch step {
         case .loading:
             if !didAnimateLoading {
-                circleScale = fullScreenScale
-                withAnimation(.easeInOut(duration: 0.7)) {
+//                circleScale = fullScreenScale
+                withAnimation(.easeInOut(duration: animationDuration)) {
                     circleScale = 1.0
                 }
                 didAnimateLoading = true
@@ -120,8 +126,8 @@ struct LaunchScreenView: View {
             }
         case .closing:
             if !didAnimateFinished {
-                circleScale = 1.0
-                withAnimation(.easeInOut(duration: 0.7)) {
+//                circleScale = 1.0
+                withAnimation(.easeInOut(duration: animationDuration)) {
                     circleScale = fullScreenScale
                 }
                 didAnimateFinished = true
@@ -144,7 +150,7 @@ struct LaunchScreenView_Previews: PreviewProvider {
                 LaunchScreenView()
                     .environmentObject(launchScreenStateManager)
                     .onTapGesture {
-                        step = (step == .loading) ? .finished : .loading
+                        step = (step == .loading) ? .closing : .loading
                         launchScreenStateManager.set(state: step)
                     }
 
